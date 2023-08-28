@@ -13,13 +13,13 @@ Embeddings are numerical representations of words or sentences that capture thei
 
 ### Problem statement
 
-It is a challenge to group data in one embedding because the data may have different levels of relevance to the query. The data needs to be mostly similar, or at least have a common theme or topic, to form a coherent and meaningful embedding. If there is only a small fraction of the data that is relevant to the query, such as 15%, then the embedding will be dominated by the other 85% of the data that is distracting or irrelevant. The embedding will not capture the semantic meaning of the query well, and the distance of the vector to the query will be too large. This will make it difficult to retrieve the data that is actually useful for the query, and may result in poor performance of the vector search. Therefore, it is important to filter out or reduce the noise in the data before creating an embedding.
+It is a challenge to group data in one embedding because the data may have different levels of relevance to the query. The data needs to be mostly similar, or at least have a common theme or topic, to form a coherent and meaningful embedding. If there is only a small fraction of the data that is relevant to the query, such as 25%, then the embedding will be dominated by the other 75% of the data that is distracting or irrelevant. The embedding will not capture the semantic meaning of the query well, and the distance of the vector to the query will be too large. This will make it difficult to retrieve the data that is actually useful for the query, and may result in poor performance of the vector search. Therefore, it is important to filter out or reduce the noise in the data before creating an embedding.
 
 ![problem_statement](./media/img/problem_statement.png)
 
 ## Repository
 
-The repo uses a simpolified sample: A query about “ACI container hosting alternatives” should be grounded using a vector search to find data that matches this question. 
+The repo uses a simplified sample: A query about “ACI container hosting alternatives” should be grounded using a vector search to find data that matches this question. 
 
 Three sources of data are available: 
 - parts of the [Azure ACI documentation](./src/assets/acifacts.txt), which provides optimal data for this query, and 
@@ -30,22 +30,31 @@ An embedding is created for each source of data, and compared with the embedding
 
 The ACI documentation embedding should have a smaller cosine distance to the query than the Shakespeare and the AKS embedding, because it has more relevant and similar information. However, grouping all the data in one embedding will lose this distinction. 
 
-The embedding will be influenced by both sources of data, and the semantic meaning of the query will be diluted. The cosine distance between the query and the embedding will be larger than the distance between the query and the ACI documentation alone, and smaller than the distance between the query and the Shakespeare alone. 
+The embedding will be influenced by all sources of data, and the semantic meaning will be diluted. The cosine distance between the query and the embedding will be larger than the distance between the query and the ACI documentation alone, and smaller than the distance between the query and the Shakespeare alone. 
 
 This will make it harder to retrieve the ACI documentation as the best match for the query, and may result in irrelevant or inaccurate results. Therefore, grouping data in one embedding is a challenge when the data has different levels of relevance to the query.
 
-- In detail the cosine distance will be calculated for embeddings with distracting data from the "Shakespeare" book:
-![data01](./media/img/data_01.png)
+### Sample Code
 
-- The cosine distance will be calculated for embeddings with "supporting data" from the ACI documenation:
+The [c# sample code](./src/Embeddings.ipynb) combines distracting data from the Azure AKS documentation and data from Skakespeare's book (= distracting data) with data from the Azure ACI documentation (= supporting data). 
+
+- In detail the cosine distance will be calculated for embeddings with ***only distracting data***:
+
+    ![data01](./media/img/data_01.png)
+
+- The cosine distance will be calculated for embeddings with ***"supporting data" only***:
+
     ![data02](./media/img/data_02.png)
 
-- The cosine distance will be calculated for embeddings containing supporting and distracting data. The distracting data will be placed for some embeddings after the supporting data as well as at the start and therefore before the supporting data:
+- The cosine distance will be calculated for embeddings containing ***supporting and distracting data***. The distracting data will be placed for some embeddings after the supporting data as well as at the start and therefore before the supporting data:
 
     ![data03](./media/img/data_03.png)
     ![data04](./media/img/data_04.png)
 
+
 ## Results
+
+The [sample c# app](./src/Embeddings.ipynb) calculates the following cosine distances:
 
 ```csharp
 Cosine distance:
@@ -86,17 +95,21 @@ Deviation:100 % 'distracting data' before facts: 18.8142 %
 
 ***As expected***:
 - Taking the cosine distance from the ACI documentation (which supports the query best) as base:
-  - Shakespeare's book (non matchin facts) has a deviation of ~ 98 %
-  - AKS documentation (similar facts) has a deviation of ~ 34 %
+  - Shakespeare's book (= just distracting data) has a deviation of ***~ 98 %***.
+  - AKS documentation (= distracting data, but somehow related data) has a deviation of ***~ 34 %***
 
-***Interesting***:
-- There's a major difference if 'distracting data' (= Shakespeare's book) is provided after or before 'facts' (= ACI documentation):
-  - 'Distracting text' at the beginning: Deviation of ***~ 13 % to ~ 21 %*** depending on the amount of 'distracting text'
-  - 'Distracting text' at the end of the text: Deviation of ***~ 1.3 % to ~ 4 %*** depending on the amount of 'distracting text'
-- Providing the same amount of 'distracting' text and 'facts' reduces the cosine distance and reduces the negative impact of 'distracting text':
-  - 75 % 'distracting data' before facts:  Deviaton of ***~ 21.5 %***
-  - 100 % 'distracting data' before facts: Deviation of ***~ 18.8 %*** 
+***Learning***:
+- There's a major difference if 'distracting data' (= Shakespeare's book) is provided after or before 'supporting data' (= ACI documentation):
+  - 'Distracting data' at the beginning: Deviation of ***~ 13 % to ~ 21 %*** depending on the amount of 'distracting data'
+  - 'Distracting data' at the end of the text: Deviation of ***~ 1.3 % to ~ 4 %*** depending on the amount of 'distracting data'
+- Providing the same amount of 'distracting' and 'supporting' data reduces the cosine distance and therefore reduces the negative impact of 'distracting data':
+  - 75 % 'distracting data' before 'supporting data':  Deviaton of ***~ 21.5 %***
+  - 100 % 'distracting data' before 'supporting data': Deviation of ***~ 18.8 %*** 
 
 ## Learning
 
-Embeddings need to be carefully crafted. If distracting text is placed at the beginning of an embedding, it can reduce the similarity between embeddings that should be close in meaning, because it can introduce noise into the vector representation. On the other hand, if distracting text is placed at the end of the text, it may have less impact on the embedding. Specificially for the model used in the sample. Therefore, it is important to design embeddings that are robust and consistent, and that can capture the essential features of the text.
+Embeddings need to be carefully crafted. If distracting data is placed at the beginning of an embedding, it reduces the similarity between embeddings and vectorized queries that should be close in meaning, because it introduces noise into the vector representation. 
+
+On the other hand, if distracting data is placed at the end of the text, it may have less impact on the embedding. Where increasing the amount of 'distracting data' reduces the cosine distance again. Specificially for the embedding model used in the sample. 
+
+Therefore, it is important to design embeddings that are robust and consistent, and that can capture the essential features of the text.
