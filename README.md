@@ -95,16 +95,16 @@ Deviation:100 % 'distracting data' before facts: 18.8142 %
 
 ***As expected***:
 - Taking the cosine distance from the ACI documentation (which supports the query best) as base:
-  - Shakespeare's book (= just distracting data) has a deviation of ***~ 98 %***.
-  - AKS documentation (= distracting data, but somehow related data) has a deviation of ***~ 34 %***
+  - Shakespeare's book (= just distracting data) has a deviation of ~ 98 %.
+  - AKS documentation (= distracting data, but somehow related data) has a deviation of ~ 34 %
 
 ***Learning***:
 - There's a major difference if 'distracting data' (= Shakespeare's book) is provided after or before 'supporting data' (= ACI documentation):
-  - 'Distracting data' at the beginning: Deviation of ***~ 13 % to ~ 21 %*** depending on the amount of 'distracting data'
-  - 'Distracting data' at the end of the text: Deviation of ***~ 1.3 % to ~ 4 %*** depending on the amount of 'distracting data'
+  - 'Distracting data' at the beginning: Deviation of ~ 13 % to ~ 21 % depending on the amount of 'distracting data'
+  - 'Distracting data' at the end of the text: Deviation of ~ 1.3 % to ~ 4 % depending on the amount of 'distracting data'
 - Providing the same amount of 'distracting' and 'supporting' data reduces the cosine distance and therefore reduces the negative impact of 'distracting data':
-  - 75 % 'distracting data' before 'supporting data':  Deviaton of ***~ 21.5 %***
-  - 100 % 'distracting data' before 'supporting data': Deviation of ***~ 18.8 %*** 
+  - 75 % 'distracting data' before 'supporting data':  Deviaton of ~ 21.5 %
+  - 100 % 'distracting data' before 'supporting data': Deviation of ~ 18.8 % 
 
 ## Learning
 
