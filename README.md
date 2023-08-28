@@ -30,19 +30,19 @@ An embedding is created for each source of data, and compared with the embedding
 
 The ACI documentation embedding should have a smaller cosine distance to the query than the Shakespeare and the AKS embedding, because it has more relevant and similar information. However, grouping all the data in one embedding will lose this distinction. 
 
-The embedding will be influenced by all sources of data, and the semantic meaning will be diluted. The cosine distance between the query and the embedding will be larger than the distance between the query and the ACI documentation alone, and smaller than the distance between the query and the Shakespeare alone. 
+The embedding will be influenced by all sources of data, and the semantic meaning will be diluted. The cosine distance between the query and the embedding will be larger if there's more 'distracting data' used to create the embedding.
 
 This will make it harder to retrieve the ACI documentation as the best match for the query, and may result in irrelevant or inaccurate results. Therefore, grouping data in one embedding is a challenge when the data has different levels of relevance to the query.
 
 ### Sample Code
 
-The [c# sample code](./src/Embeddings.ipynb) combines distracting data from the Azure AKS documentation and data from Skakespeare's book (= distracting data) with data from the Azure ACI documentation (= supporting data). 
+The [c# sample code](./src/Embeddings.ipynb) combines 'distracting data' with 'supporting data', creates enbeddings and caluclates the cosine distance.
 
-- In detail the cosine distance will be calculated for embeddings with ***only distracting data***:
+- In detail the cosine distance will be calculated for embeddings with ***only distracting data***. Shakespeare's book and the Azure AKS documentation are treated as 'distracting data':
 
     ![data01](./media/img/data_01.png)
 
-- The cosine distance will be calculated for embeddings with ***"supporting data" only***:
+- The cosine distance will be calculated for embeddings with ***"supporting data" only***. Here the 'Azure ACI documentation' is used:
 
     ![data02](./media/img/data_02.png)
 
